@@ -19,9 +19,9 @@ export class AppComponent {
 
   encryptkey;
 
-  
 
-  constructor(private datePipe:DatePipe){
+
+  constructor(private datePipe: DatePipe) {
 
   }
 
@@ -33,30 +33,30 @@ export class AppComponent {
     //this.encryptWithAES();
   }
 
-  concatenar(mac:string,canal:string,versionApp:string):string{
+  concatenar(mac: string, canal: string, versionApp: string): string {
 
     this.fecha = this.getDateWithFormat();
     return mac + canal + versionApp + this.fecha;
   }
 
-  getDateWithFormat():string{
+  getDateWithFormat(): string {
     let localDate = new Date();
 
-    let str1:string = this.datePipe.transform(localDate,'yyyyMMddHHmmss');
-    let gmtInMinutes:number= new Date().getTimezoneOffset();
-    localDate.setHours(gmtInMinutes/60);
+    let str1: string = this.datePipe.transform(localDate, 'yyyyMMddHHmmss');
+    let gmtInMinutes: number = new Date().getTimezoneOffset();
+    localDate.setHours(gmtInMinutes / 60);
     localDate.setMinutes(0);
     localDate.setSeconds(0);
-    
-    let str2:string = '0000-';
-    let str3:string = this.datePipe.transform(localDate,'HH:mm:ss');
+
+    let str2: string = '0000-';
+    let str3: string = this.datePipe.transform(localDate, 'HH:mm:ss');
 
     return str1 + str2 + str3;
 
   }
 
 
-  encryptWithAES(msg,pass){
+  encryptWithAES(msg, pass) {
 
     /* let workingKey:string = '0iZguBMOZ6IUYxMwfn70v+k5aXAPL0CG0YY1MESuHXs=';
     let initializationVector:string = 'b9ix1/HLZ7z3S3FnOUM9oA==';
@@ -67,25 +67,41 @@ export class AppComponent {
     let strAcutal: string = this.concatenar('6b95bc74-50ba-4724-bb57-d990f693a46b','99','0.0.4');
 
     let strAgregado = strAcutal + workingKeyDecode + initializationVectorDecode; */
-    
-     this.encryptkey = CryptoJS.AES.encrypt(msg, pass, {
+
+    this.encryptkey = CryptoJS.AES.encrypt(msg, pass, {
       //iv: iv,
       padding: CryptoJS.pad.Pkcs5,
       mode: CryptoJS.mode.CBC
-      });
-
-      //Encripta con base 64
-
-      return this.encryptkey;
-    
+    });
+    return this.encryptkey;
 
   }
 
-  encryptWithBase64(word:string){
-    CryptoJS.enc.Base64.parse(word);
+  encryptWithBase64(word: string) {
+    let hash = CryptoJS.SHA256(word);
+    hash.toString(CryptoJS.enc.Base64);
     return word;
   }
 
+  encryptWithSHA512(msg: string) {
+
+    let hash = CryptoJS.HmacSHA512(msg, "Secret Passphrase");
+    return hash;
+
+  }
+
+  decryptAES(msg) {
+    let decrypted = CryptoJS.AES.decrypt(msg, "Secret Passphrase");
+  }
+
+  decryptBase64(msg) {
+    var words = CryptoJS.enc.Base64.parse(msg);
+    var textString = CryptoJS.enc.Utf8.stringify(words);
+  }
+
+  decryptSHA512(){
+    //buscar :c
+  }
 
 
 
